@@ -18,12 +18,22 @@ poetry install --with dev
 ```
 
 ### Testing
-#### Run lint checks
+#### Locally
+Run lint checks
 ```commandline
 poetry run task lint
 ```
-
-#### Run tests locally
+Run tests
 ```commandline
 poetry run task test
+```
+
+#### Docker
+Run tests in docker using poetry task 
+```commandline
+poetry run task compose-test
+```
+Or using plain `docker-compose`
+```commandline
+docker compose run --rm test
 ```

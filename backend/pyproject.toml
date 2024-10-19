@@ -9,6 +9,7 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.12"
 fastapi = "^0.115.2"
+uvloop = "^0.21.0"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -24,6 +25,12 @@ lint = "task lint_black && task lint_mypy"
 lint_black = "black --check app tests"
 lint_mypy = "mypy app tests"
 test = "pytest"
+format = "black app tests"
+ci = "task lint && task test"
+
+compose-clean = "docker compose down --volumes --remove-orphans"
+compose-up = "docker compose up"
+compose-test = "docker compose run --rm test"
 
 
 [tool.mypy]

@@ -1,8 +1,6 @@
-from fastapi import FastAPI, Response
+from fastapi import FastAPI
+
+from app.routers import router
 
 app = FastAPI()
-
-
-@app.get("/")
-def index() -> Response:
-    return Response(content='{"message": "OK"}', media_type="application/json")
+app.include_router(router)

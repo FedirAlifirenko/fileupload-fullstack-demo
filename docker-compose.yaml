@@ -1,0 +1,20 @@
+
+services:
+  api: &api
+    container_name: virtuo-api
+    build:
+      context: ./backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - uploaded-files-data:/home/user/app/uploaded_files
+
+  test:
+      <<: *api
+      container_name: virtuo-api-test
+      profiles: ["test"]
+      command: poetry run task ci
+
+
+volumes:
+  uploaded-files-data:

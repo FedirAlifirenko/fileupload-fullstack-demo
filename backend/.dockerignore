@@ -1,0 +1,22 @@
+# Exclude Python bytecode files
+*.pyc
+
+# Exclude system-specific files
+__pycache__
+
+# Exclude development files
+.DS_Store
+.idea/
+*.log
+*.bak
+
+# Exclude version control files
+.git
+.gitignore
+
+.venv
+venv
+
+# Exclude pytest cache directories
+__pycache__/
+.pytest_cache/
