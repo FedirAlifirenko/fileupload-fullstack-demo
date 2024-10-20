@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import pytest
 from fastapi import FastAPI, APIRouter
 from starlette.testclient import TestClient
@@ -19,3 +21,8 @@ def router() -> APIRouter:
 @pytest.fixture
 def client(app: FastAPI) -> TestClient:
     return TestClient(app)
+
+
+@pytest.fixture
+def project_root() -> Path:
+    return Path(__file__).parent.parent

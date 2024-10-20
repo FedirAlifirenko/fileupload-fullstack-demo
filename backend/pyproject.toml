@@ -27,7 +27,7 @@ uvicorn = "^0.32.0"
 lint = "task lint_black && task lint_mypy"
 lint_black = "black --check app tests"
 lint_mypy = "mypy app tests --install-types --non-interactive"
-test = "pytest"
+test = "pytest --disable-warnings"
 format = "black app tests"
 ci = "task lint && task test"
 

@@ -47,7 +47,9 @@ async def upload_chunk(
     return MessageResponse(message=f"Chunk {resumable_chunk_number} uploaded")
 
 
-@router.post("/upload/complete")
+@router.post(
+    "/upload/complete", name="complete-upload", description="Complete file upload"
+)
 async def complete_upload(request: CompleteUploadRequest) -> MessageResponse:
     resumable_filename = request.resumable_filename
     resumable_identifier = request.resumable_identifier
