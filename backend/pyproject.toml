@@ -8,8 +8,10 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.12"
-fastapi = "^0.115.2"
+fastapi = {extras = ["standard"], version = "^0.115.2"}
 uvloop = "^0.21.0"
+passlib = {extras = ["bcrypt"], version = "^1.7.4"}
+aiofiles = "^24.1.0"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -18,12 +20,13 @@ httpx = "^0.27.2"
 mypy = "^1.12.0"
 taskipy = "^1.13.0"
 black = "^24.10.0"
+uvicorn = "^0.32.0"
 
 
 [tool.taskipy.tasks]
 lint = "task lint_black && task lint_mypy"
 lint_black = "black --check app tests"
-lint_mypy = "mypy app tests"
+lint_mypy = "mypy app tests --install-types --non-interactive"
 test = "pytest"
 format = "black app tests"
 ci = "task lint && task test"
