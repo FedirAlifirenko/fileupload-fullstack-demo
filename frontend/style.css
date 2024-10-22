@@ -68,3 +68,7 @@ header, footer {
 .file-upload-input {
     display: none;
 }
+#notifications {
+    flex: 1;
+    padding: 20px;
+}

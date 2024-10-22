@@ -3,7 +3,14 @@ from http import HTTPStatus
 from pathlib import Path
 
 import aiofiles
-from fastapi import Depends, UploadFile, HTTPException, APIRouter, Query
+from fastapi import (
+    Depends,
+    UploadFile,
+    HTTPException,
+    APIRouter,
+    Query,
+    BackgroundTasks,
+)
 
 from app.models.files import (
     CompleteUploadRequest,
@@ -11,7 +18,8 @@ from app.models.files import (
     ListFilesResponse,
     MessageResponse,
 )
-from app.dependencies.auth import get_current_user
+from app.dependencies.auth import get_current_user, UserDep
+from app.dependencies.notifications import NotificationsServiceDep
 
 UPLOAD_DIR = Path("./uploaded_files/chunks")
 COMPLETED_DIR = Path("./uploaded_files/files")
@@ -20,7 +28,9 @@ COMPLETED_DIR.mkdir(exist_ok=True, parents=True)
 
 READ_CHUNK_SIZE = 1024 * 1024  # 1 MB
 
-router = APIRouter(prefix="/files", dependencies=[Depends(get_current_user)])
+router = APIRouter(
+    prefix="/files", dependencies=[Depends(get_current_user)], tags=["Files"]
+)
 
 
 @router.get("/upload", name="check-chunk", description="Check if a file chunk exists")
@@ -56,7 +66,12 @@ async def upload_chunk(
 @router.post(
     "/upload/complete", name="complete-upload", description="Complete file upload"
 )
-async def complete_upload(request: CompleteUploadRequest) -> MessageResponse:
+async def complete_upload(
+    request: CompleteUploadRequest,
+    user: UserDep,
+    service: NotificationsServiceDep,
+    background_tasks: BackgroundTasks,
+) -> MessageResponse:
     resumable_filename = request.resumable_filename
     resumable_identifier = request.resumable_identifier
 
@@ -78,6 +93,9 @@ async def complete_upload(request: CompleteUploadRequest) -> MessageResponse:
             os.remove(chunk_path)
             part_number += 1
 
+    background_tasks.add_task(
+        service.notify_clients, f"File {resumable_filename} uploaded by {user}"
+    )
     return MessageResponse(message=f"File {resumable_filename} uploaded successfully")
 
 

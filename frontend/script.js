@@ -47,6 +47,7 @@ function handleLogin() {
     const authHeader = `Basic ${btoa(`${username}:${password}`)}`;
 
     localStorage.setItem('authHeader', authHeader);
+    r.opts.headers['Authorization'] = authHeader;
 
     updateLoginState(username);
     console.log('auth header saved');
@@ -119,6 +120,9 @@ async function fetchFileList() {
             },
         });
         if (!response.ok) {
+            if (response.status === 401) {
+                alert('Not authorized');
+            }
             throw new Error('Failed to fetch file list');
         }
         const data = await response.json();
@@ -167,6 +171,36 @@ function getAuthHeader() {
     return localStorage.getItem('authHeader');
 }
 
+// Function to establish a WebSocket connection
+function setupWebSocket() {
+    const socket = new WebSocket(`ws://localhost:8000/api/notifications/ws?authorization=${getAuthHeader()}`);
+
+    // Event listener for when a message is received from the server
+    socket.onmessage = function(event) {
+        console.log("Received message from WebSocket:", event.data);
+        const message = event.data;
+        addNotification(message);
+    };
+
+    // Event listener for when the WebSocket connection is opened
+    socket.onopen = function() {
+        console.log("Connected to WebSocket");
+    };
+
+    // Event listener for when the WebSocket connection is closed
+    socket.onclose = function() {
+        console.log("Disconnected from WebSocket");
+    };
+}
+
+// Function to add a notification to the notifications list
+function addNotification(message) {
+    const notificationList = document.getElementById("notification-list");
+    const listItem = document.createElement("li");
+    listItem.textContent = message;
+    notificationList.appendChild(listItem);
+}
+
 // Initialize on Page Load
 window.onload = function() {
     const authHeader = getAuthHeader();
@@ -179,4 +213,8 @@ window.onload = function() {
 
     fetchFileList();
     document.getElementById('no-files-message').style.display = 'none';
+
+
+    // Call the setup function to establish the WebSocket connection
+    setupWebSocket();
 };
