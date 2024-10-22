@@ -8,12 +8,28 @@ services:
       - "8000:8000"
     volumes:
       - uploaded-files-data:/home/user/app/uploaded_files
+    healthcheck:
+      test: [ "CMD", "python", "-c", "import requests; requests.get('http://localhost:8000/api/health').raise_for_status()" ]
+      interval: 5s
+      retries: 10
+      start_period: 1s
+      timeout: 5s
 
   test:
       <<: *api
       container_name: virtuo-api-test
       profiles: ["test"]
       command: poetry run task ci
+
+  web:
+    container_name: virtuo-web
+    build:
+      context: ./frontend
+    ports:
+      - "8080:8080"
+    depends_on:
+      api:
+        condition: service_healthy
 
 
 volumes:

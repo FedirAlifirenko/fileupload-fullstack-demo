@@ -29,8 +29,13 @@ def project_root() -> Path:
     return Path(__file__).parent.parent
 
 
+@pytest.fixture
+def auth_header() -> str:
+    return f"Basic {b64encode(b'test:test').decode()}"
+
+
 @pytest.fixture(autouse=True)
-def authorize_user(client: TestClient) -> None:
+def authorize_user(client: TestClient, auth_header: str) -> None:
     client.headers.update(
-        {"Authorization": f"Basic {b64encode(b'test:test').decode()}"}
+        {"Authorization": auth_header},
     )

@@ -27,6 +27,5 @@ class Service:
 
     async def notify_clients(self, message: str) -> None:
         logger.info(f"Sending message to {len(self._clients)} clients")
-        print(f"Sending message to {len(self._clients)} clients")
         for client in self._clients:
             await client.send_text(message)

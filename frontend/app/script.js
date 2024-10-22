@@ -52,6 +52,7 @@ function handleLogin() {
     updateLoginState(username);
     console.log('auth header saved');
     fetchFileList();
+    setupWebSocket();
 }
 
 // Handle Logout
@@ -60,6 +61,7 @@ function handleLogout() {
     updateLoginState(null);
     console.log('auth header removed');
     clearFileList();
+    closeWebSocket();
 }
 
 // Update Login State
@@ -171,15 +173,24 @@ function getAuthHeader() {
     return localStorage.getItem('authHeader');
 }
 
+// Global WebSocket variable
+let socket = null;
+
 // Function to establish a WebSocket connection
 function setupWebSocket() {
-    const socket = new WebSocket(`ws://localhost:8000/api/notifications/ws?authorization=${getAuthHeader()}`);
+    if (socket && socket.readyState !== WebSocket.CLOSED) {
+        console.log("WebSocket is already connected");
+        return;
+    }
+
+    socket = new WebSocket(`ws://localhost:8000/api/notifications/ws?authorization=${getAuthHeader()}`);
 
     // Event listener for when a message is received from the server
     socket.onmessage = function(event) {
         console.log("Received message from WebSocket:", event.data);
         const message = event.data;
         addNotification(message);
+        fetchFileList();  // Refresh the list of files
     };
 
     // Event listener for when the WebSocket connection is opened
@@ -191,6 +202,15 @@ function setupWebSocket() {
     socket.onclose = function() {
         console.log("Disconnected from WebSocket");
     };
+}
+
+// Function to close the WebSocket connection
+function closeWebSocket() {
+    if (socket) {
+        socket.close();
+        socket = null;
+        console.log("WebSocket connection closed");
+    }
 }
 
 // Function to add a notification to the notifications list
