@@ -3,9 +3,15 @@ from http import HTTPStatus
 from pathlib import Path
 
 import aiofiles
-from fastapi import UploadFile, HTTPException, APIRouter, Query
+from fastapi import Depends, UploadFile, HTTPException, APIRouter, Query
 
-from app.models.files import CompleteUploadRequest, MessageResponse
+from app.models.files import (
+    CompleteUploadRequest,
+    FileResponse,
+    ListFilesResponse,
+    MessageResponse,
+)
+from app.dependencies.auth import get_current_user
 
 UPLOAD_DIR = Path("./uploaded_files/chunks")
 COMPLETED_DIR = Path("./uploaded_files/files")
@@ -14,7 +20,7 @@ COMPLETED_DIR.mkdir(exist_ok=True, parents=True)
 
 READ_CHUNK_SIZE = 1024 * 1024  # 1 MB
 
-router = APIRouter(prefix="/files")
+router = APIRouter(prefix="/files", dependencies=[Depends(get_current_user)])
 
 
 @router.get("/upload", name="check-chunk", description="Check if a file chunk exists")
@@ -73,3 +79,13 @@ async def complete_upload(request: CompleteUploadRequest) -> MessageResponse:
             part_number += 1
 
     return MessageResponse(message=f"File {resumable_filename} uploaded successfully")
+
+
+@router.get("", name="list-files", description="List uploaded files")
+async def list_files() -> ListFilesResponse:
+    files = [
+        FileResponse(name=file_path.name, size=file_path.stat().st_size)
+        for file_path in COMPLETED_DIR.iterdir()
+        if file_path.is_file()
+    ]
+    return ListFilesResponse(files=files)

@@ -1,3 +1,4 @@
+import base64
 import os
 from pathlib import Path
 from typing import Any, Generator

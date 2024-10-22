@@ -1,3 +1,4 @@
+from base64 import b64encode
 from pathlib import Path
 
 import pytest
@@ -26,3 +27,10 @@ def client(app: FastAPI) -> TestClient:
 @pytest.fixture
 def project_root() -> Path:
     return Path(__file__).parent.parent
+
+
+@pytest.fixture(autouse=True)
+def authorize_user(client: TestClient) -> None:
+    client.headers.update(
+        {"Authorization": f"Basic {b64encode(b'test:test').decode()}"}
+    )

@@ -5,8 +5,9 @@ from passlib.context import CryptContext
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 users_db = {
-    "alice": pwd_context.hash("alice_password"),
-    "bob": pwd_context.hash("bob_password"),
+    "admin": pwd_context.hash("admin"),
+    "guest": pwd_context.hash("guest"),
+    "test": pwd_context.hash("test"),
 }
 
 

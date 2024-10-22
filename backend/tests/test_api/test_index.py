@@ -8,4 +8,4 @@ def test_index(client: TestClient, router: APIRouter) -> None:
     response = client.get(url)
 
     assert response.status_code == HTTPStatus.OK
-    assert response.text == "index page"
+    assert response.text == "index page user='test'"

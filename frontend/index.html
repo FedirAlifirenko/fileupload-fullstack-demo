@@ -7,13 +7,49 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>My Simple App</h1>
+    <header>
+        <h1>Upload Files App</h1>
+    </header>
 
-    <label for="fileInput" class="file-upload-label">Upload a file:</label>
-    <input type="file" id="fileInput" class="file-upload-input">
+    <div class="container">
+        <div class="sidebar">
+            <p id="user-login-message">Not logged in yet.</p>
+            <form id="login-form" class="form">
+                <div>
+                    <label for="username">Username:</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                <div>
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit">Login</button>
+            </form>
+            <button id="logout-button" style="display: none;">Logout</button>
+
+            <input type="file" id="fileInput" class="file-upload-input">
+            <label for="fileInput" class="file-upload-label">Upload a file</label>
+        </div>
+
+        <div id="file-list">
+            <p id="no-files-message" style="display: none;">No files uploaded yet.</p>
+            <table id="files-table" class="file-table">
+                <thead>
+                    <tr>
+                        <th>File Name</th>
+                        <th>File Size</th>
+                    </tr>
+                </thead>
+                <tbody id="files"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Upload Files App</p>
+    </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/resumablejs@1.1.0/resumable.min.js"></script>
     <script src="script.js"></script>
-
 </body>
 </html>
